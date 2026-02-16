@@ -1,0 +1,10 @@
+# IdleHunter - Development and testing (install: pip install -r requirements-dev.txt)
+-r requirements.txt
+
+pytest>=7.4.0
+pytest-django>=4.5.0
+black>=23.0.0
+flake8>=6.1.0
+# Optional:
+# django-extensions>=3.2.0
+# django-debug-toolbar>=4.2.0

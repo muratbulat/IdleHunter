@@ -3,7 +3,8 @@
 from .base import *  # noqa: F401, F403
 
 DEBUG = env.bool("DEBUG", default=False)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+# Default to localhost; for production set ALLOWED_HOSTS in .env to your hostname(s)/IP(s).
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 # Database must be set by compose (DATABASE_URL or POSTGRES_*)
 # Redis and Celery URLs are passed by compose

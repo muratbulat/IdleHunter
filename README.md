@@ -136,6 +136,23 @@ See `.env.example`. Important variables:
 
 ---
 
+## Testing
+
+Tests use **pytest** and **pytest-django**. Run them locally (with a virtualenv) or in Docker:
+
+```bash
+# Local: install dev deps then run tests (uses SQLite via config.settings.development)
+pip install -r requirements-dev.txt
+pytest
+
+# Docker: install dev deps and run tests (build first so tests/ is in the image: docker compose build web)
+docker compose run --rm web sh -c "pip install -q pytest pytest-django && python -m pytest tests/ -v"
+```
+
+Or run Django’s test runner: `python manage.py test` (uses `config.settings.development` if `DJANGO_SETTINGS_MODULE` is unset).
+
+---
+
 ## Deployment
 
 See **[DEPLOYMENT.md](DEPLOYMENT.md)** for:

@@ -51,7 +51,7 @@ nano .env   # or vim
 
 - `SECRET_KEY` — long random string (e.g. `python -c "import secrets; print(secrets.token_urlsafe(50))"`).
 - `DEBUG=0`
-- `ALLOWED_HOSTS` — your public hostname(s) or IP, e.g. `idlehunter.example.com` or `192.168.1.10`.
+- `ALLOWED_HOSTS` — your public hostname(s) or IP (comma-separated), e.g. `idlehunter.example.com` or `192.168.1.10`. Required in production when using Docker; the default is only `localhost,127.0.0.1`.
 - `CSRF_TRUSTED_ORIGINS` — e.g. `https://idlehunter.example.com` or `http://192.168.1.10`
 - `POSTGRES_PASSWORD` — strong password (keep secret).
 

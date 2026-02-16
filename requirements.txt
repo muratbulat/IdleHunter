@@ -45,10 +45,5 @@ openpyxl>=3.1.0
 # Optional: babel for extra i18n utilities
 Babel>=2.13.0
 
-# ---- Development & Quality (optional, can move to requirements/dev.txt) ----
-# pytest>=7.4.0
-# pytest-django>=4.5.0
-# black>=23.0.0
-# flake8>=6.1.0
-# django-extensions>=3.2.0
-# django-debug-toolbar>=4.2.0
+# ---- Development & Quality ----
+# See requirements-dev.txt for pytest, black, flake8 (pip install -r requirements-dev.txt).

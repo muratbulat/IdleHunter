@@ -1,0 +1,1 @@
+# IdleHunter test package
