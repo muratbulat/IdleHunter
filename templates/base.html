@@ -10,6 +10,7 @@
         body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1rem 2rem; line-height: 1.5; }
         header { border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
         header nav { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        header nav .nav-logo { width: 20px; height: 20px; vertical-align: middle; margin-right: 0.25rem; }
         header a { color: #0066cc; text-decoration: none; }
         header a:hover { text-decoration: underline; }
         main { max-width: 60rem; }
@@ -20,7 +21,7 @@
 <body>
     <header>
         <nav>
-            <a href="/">{% trans "IdleHunter" %}</a>
+            <a href="/"><img src="{% static 'favicon.svg' %}" alt="" class="nav-logo" width="20" height="20">{% trans "IdleHunter" %}</a>
             <span>|</span>
             <form action="{% url 'set_language' %}" method="post">
                 {% csrf_token %}
