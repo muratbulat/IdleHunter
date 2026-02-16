@@ -1,11 +1,11 @@
-{% load i18n %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html lang="{{ request.LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{% trans "IdleHunter" %}{% endblock %}</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23228b22' rx='4'/%3E%3Cpath fill='%23fff' d='M12 10h8v2h-8zm0 4h6v2h-6zm0 4h8v2h-8z'/%3E%3C/svg%3E" type="image/svg+xml">
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1rem 2rem; line-height: 1.5; }
         header { border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }

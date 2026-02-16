@@ -133,6 +133,7 @@ LOCALE_PATHS = [BASE_DIR / "locale"]
 # Static files (leading slash required so admin/icons load at /static/... from any page)
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
