@@ -167,6 +167,12 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)**. Contributions are welcome (issues, P
 
 ---
 
+## Developer
+
+**Murat Bulat**
+
+---
+
 ## License
 
 **[MIT License](LICENSE)** — see [LICENSE](LICENSE).
