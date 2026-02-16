@@ -1,0 +1,85 @@
+# IdleHunter - Docker Compose
+# Services: web, db, redis, celery_worker, celery_beat
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-idlehunter}
+      POSTGRES_USER: ${POSTGRES_USER:-idlehunter}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-idlehunter} -d ${POSTGRES_DB:-idlehunter}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 config.wsgi:application
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.docker
+      DATABASE_URL: postgres://${POSTGRES_USER:-idlehunter}:${POSTGRES_PASSWORD:-change-me}@db:5432/${POSTGRES_DB:-idlehunter}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build: .
+    command: celery -A config worker -l info
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.docker
+      DATABASE_URL: postgres://${POSTGRES_USER:-idlehunter}:${POSTGRES_PASSWORD:-change-me}@db:5432/${POSTGRES_DB:-idlehunter}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+  celery_beat:
+    build: .
+    command: celery -A config beat -l info
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.docker
+      DATABASE_URL: postgres://${POSTGRES_USER:-idlehunter}:${POSTGRES_PASSWORD:-change-me}@db:5432/${POSTGRES_DB:-idlehunter}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:

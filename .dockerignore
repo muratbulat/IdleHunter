@@ -1,0 +1,18 @@
+# IdleHunter - exclude from Docker build context
+.git
+.gitignore
+.env
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+*.md
+!README.md
+db.sqlite3
+staticfiles
+media
+*.pot
+*.mo

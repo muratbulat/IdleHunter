@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "IdleHunter" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "IdleHunter" %}</h1>
+
+<section class="dashboard-section" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #dee2e6;">
+  <h2 style="margin-top: 0;">{% trans "Dashboard" %}</h2>
+  <p style="color: #666; margin-bottom: 1rem;">{% trans "Idle VM detection — base setup is running." %}</p>
+  <p>
+    <strong>{% trans "Data sources" %}:</strong> {{ data_source_count|default:0 }}
+    &nbsp;|&nbsp;
+    <strong>{% trans "Virtual machines" %}:</strong> {{ vm_count|default:0 }}
+    &nbsp;|&nbsp;
+    <strong>{% trans "Scan runs" %}:</strong> {{ scan_run_count|default:0 }}
+  </p>
+  <p><a href="/admin/">{% trans "View and manage in Admin" %} →</a></p>
+</section>
+
+{% if recent_vms %}
+<section style="margin-top: 1.5rem;">
+  <h3>{% trans "Recent VMs" %}</h3>
+  <table style="border-collapse: collapse; width: 100%; max-width: 40rem;">
+    <thead>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Name" %}</th>
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Source" %}</th>
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Last seen" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vm in recent_vms %}
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 0.25rem 0.5rem;">{{ vm.name }}</td>
+        <td style="padding: 0.25rem 0.5rem;">{{ vm.data_source.name }}</td>
+        <td style="padding: 0.25rem 0.5rem;">{{ vm.last_seen|date:"Y-m-d H:i"|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if recent_scans %}
+<section style="margin-top: 1.5rem;">
+  <h3>{% trans "Recent scan runs" %}</h3>
+  <table style="border-collapse: collapse; width: 100%; max-width: 40rem;">
+    <thead>
+      <tr style="border-bottom: 1px solid #ddd;">
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Started" %}</th>
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Source" %}</th>
+        <th style="text-align: left; padding: 0.25rem 0.5rem;">{% trans "Status" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run in recent_scans %}
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 0.25rem 0.5rem;">{{ run.started_at|date:"Y-m-d H:i" }}</td>
+        <td style="padding: 0.25rem 0.5rem;">{% if run.data_source %}{{ run.data_source.name }}{% else %}—{% endif %}</td>
+        <td style="padding: 0.25rem 0.5rem;">{{ run.get_status_display }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

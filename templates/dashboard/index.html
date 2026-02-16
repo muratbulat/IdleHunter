@@ -1,0 +1,370 @@
+{% load static dashboard_extras %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kontrol Paneli | IdleHunter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --noc-bg: #0d1117;
+            --noc-card: #161b22;
+            --noc-border: #30363d;
+            --accent-cyan: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-orange: #d29922;
+            --text-primary: #e6edf3;
+            --text-muted: #8b949e;
+        }
+        body { min-height: 100vh; background: var(--noc-bg); color: var(--text-primary); overflow-x: hidden; overscroll-behavior: none; }
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+            background: var(--noc-card); border-right: 1px solid var(--noc-border);
+            padding: 0.75rem 0; z-index: 1000;
+        }
+        .sidebar .nav-link {
+            color: var(--text-muted); padding: 0.45rem 1rem; border-left: 3px solid transparent; font-size: 0.9rem;
+        }
+        .sidebar .nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+        .sidebar .nav-link.active { color: var(--accent-green); border-left-color: var(--accent-green); background: rgba(63,185,80,0.08); }
+        .sidebar .brand { padding: 0 1rem 0.75rem; font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+        .main-content { margin-left: var(--sidebar-width); padding: 0.75rem 1rem; min-height: 100vh; overflow-x: auto; }
+
+        /* KPI Cards - compact */
+        .kpi-card {
+            background: var(--noc-card); border: 1px solid var(--noc-border); border-radius: 8px;
+            padding: 0.65rem 0.85rem; height: 100%; position: relative; overflow: hidden;
+        }
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        }
+        .kpi-card.card-scope::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); box-shadow: 0 0 8px var(--accent-cyan); }
+        .kpi-card.card-threat::before { background: linear-gradient(90deg, var(--accent-red), var(--accent-orange)); box-shadow: 0 0 8px var(--accent-red); }
+        .kpi-card.card-savings::before { background: linear-gradient(90deg, var(--accent-green), transparent); box-shadow: 0 0 8px var(--accent-green); }
+        .kpi-card .kpi-value { font-size: 1.35rem; font-weight: 700; }
+        .kpi-card.card-scope .kpi-value { color: var(--accent-cyan); }
+        .kpi-card.card-threat .kpi-value { color: var(--accent-red); }
+        .kpi-card.card-savings .kpi-value { color: var(--accent-green); }
+        .kpi-card .kpi-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.2rem; }
+        .kpi-card .kpi-icon { font-size: 1.35rem; opacity: 0.9; }
+        .kpi-card.card-scope .kpi-icon { color: var(--accent-cyan); }
+        .kpi-card.card-threat .kpi-icon { color: var(--accent-red); }
+        .kpi-card.card-savings .kpi-icon { color: var(--accent-green); }
+
+        /* Charts section - compact */
+        .chart-card {
+            background: var(--noc-card); border: 1px solid var(--noc-border); border-radius: 8px;
+            padding: 0.6rem 0.75rem; height: 100%;
+        }
+        .chart-card h3 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .chart-card canvas { display: block; max-height: 160px; }
+
+        /* VM Table - compact */
+        .table-noc {
+            background: var(--noc-card); border: 1px solid var(--noc-border); border-radius: 8px; overflow: hidden;
+        }
+        .table-noc thead th {
+            background: #21262d; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.04em; border-color: var(--noc-border); padding: 0.4rem 0.5rem;
+        }
+        .table-noc thead th.sortable { cursor: pointer; }
+        .table-noc thead th.sortable a { color: inherit; display: block; min-height: 1.5em; }
+        .table-noc thead th.sortable:hover a,
+        .table-noc thead th.sortable.active a { color: var(--accent-cyan); }
+        .table-noc thead th .sort-arrow { opacity: 0.6; font-size: 0.65rem; }
+        .table-noc tbody td { padding: 0.4rem 0.5rem; vertical-align: middle; border-color: var(--noc-border); color: var(--text-primary); font-size: 0.85rem; }
+        .table-noc tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .table-noc .vm-name { font-weight: 600; font-size: 0.85rem; }
+        .table-noc .vm-host { font-size: 0.75rem; color: var(--text-muted); }
+        .dot-on { color: var(--accent-green); text-shadow: 0 0 6px var(--accent-green); }
+        .dot-off { color: var(--text-muted); }
+        .badge-aktif { background: rgba(63,185,80,0.2); color: var(--accent-green); }
+        .badge-atil { background: rgba(248,81,73,0.2); color: var(--accent-red); }
+        .badge-bekliyor { background: rgba(139,148,158,0.25); color: var(--text-muted); }
+        .progress-noc { height: 5px; background: var(--noc-bg); border-radius: 3px; }
+        .progress-noc .progress-bar { border-radius: 3px; }
+        .toolbar-noc { background: #21262d; border-bottom: 1px solid var(--noc-border); padding: 0.4rem 0.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+        .toolbar-noc .search-wrap { flex: 1; min-width: 200px; }
+        .toolbar-noc .search-wrap .form-control { background: var(--noc-bg); border-color: var(--noc-border); color: var(--text-primary); }
+        .toolbar-noc .search-wrap .form-control:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+        .toolbar-noc .filter-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .toolbar-noc .filter-pills .btn-pill { border-radius: 9999px; font-size: 0.8rem; padding: 0.35rem 0.85rem; text-decoration: none; border: 1px solid transparent; }
+        .toolbar-noc .filter-pills .btn-pill.active-all { background: var(--text-muted); color: var(--noc-bg); }
+        .toolbar-noc .filter-pills .btn-pill.active-zombie { background: var(--accent-red); color: #fff; }
+        .toolbar-noc .filter-pills .btn-pill.active-aktif { background: var(--accent-green); color: #fff; }
+        .toolbar-noc .filter-pills .btn-pill.active-off { background: var(--text-muted); color: var(--noc-bg); }
+        .toolbar-noc .filter-pills .btn-pill:not([class*="active-"]) { background: transparent; border-color: var(--noc-border); color: var(--text-muted); }
+        .toolbar-noc .filter-pills .btn-pill:not([class*="active-"]):hover { border-color: var(--text-muted); color: var(--text-primary); }
+        .pagination-noc .page-link { background: var(--noc-card); border-color: var(--noc-border); color: var(--accent-cyan); }
+        .pagination-noc .page-link:hover { background: #21262d; border-color: var(--noc-border); color: var(--text-primary); }
+        .pagination-noc .page-item.active .page-link { background: var(--accent-cyan); border-color: var(--accent-cyan); color: var(--noc-bg); }
+        .pagination-noc .page-item.disabled .page-link { color: var(--text-muted); }
+        @media (max-width: 991.98px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.2s; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+            .sidebar-overlay.show { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="brand"><i class="bi bi-cpu me-2"></i>IdleHunter</div>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link active" href="{% url 'web:dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Kontrol Paneli</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}"><i class="bi bi-gear me-2"></i>Yönetim</a></li>
+            <li class="nav-item"><a class="nav-link" href="/swagger/" target="_blank" rel="noopener"><i class="bi bi-journal-code me-2"></i>API (Swagger)</a></li>
+            <li class="nav-item mt-auto pt-2 border-top border-secondary">
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link border-0 bg-transparent text-start w-100" style="color: inherit;"><i class="bi bi-box-arrow-right me-2"></i>Çıkış</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm d-lg-none me-2" id="sidebarToggle" aria-label="Menüyü aç"><i class="bi bi-list"></i></button>
+            <h1 class="h5 mb-0 fw-bold">Kontrol Paneli</h1>
+            <span class="text-muted small">{{ user.get_username }}</span>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <div class="kpi-card card-scope">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3"><i class="bi bi-hdd-stack kpi-icon"></i></div>
+                        <div>
+                            <div class="kpi-title">Toplam Sunucu</div>
+                            <div class="kpi-value">{{ total_vms }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="kpi-card card-threat">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3"><i class="bi bi-bug kpi-icon"></i></div>
+                        <div>
+                            <div class="kpi-title">Atıl (Zombie) Sunucular</div>
+                            <div class="kpi-value">{{ idle_zombie_count }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="kpi-card card-savings">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3"><i class="bi bi-cpu kpi-icon"></i></div>
+                        <div>
+                            <div class="kpi-title">Kurtarılabilir Kaynak</div>
+                            <div class="kpi-value">{{ savings_vcpu }} vCPU / {{ savings_ram_gb }} GB RAM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-2 mb-2">
+            <div class="col-lg-5">
+                <div class="chart-card">
+                    <h3>Verimlilik Oranı</h3>
+                    <canvas id="chartDonut" height="160"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="chart-card">
+                    <h3>En Çok Atıl Sunucu Barındıran Kaynaklar (Top 5)</h3>
+                    <canvas id="chartBar" height="160"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- VM Data Grid -->
+        <div class="table-noc">
+            <div class="px-2 py-1 border-bottom border-secondary d-flex justify-content-between align-items-center flex-wrap gap-1">
+                <h2 class="h6 mb-0 fw-bold">Canlı Sunucu Listesi</h2>
+            </div>
+            <!-- Toolbar: Search + Filters -->
+            <div class="toolbar-noc">
+                <form action="{% url 'web:dashboard' %}" method="get" class="search-wrap d-flex gap-1">
+                    <input type="hidden" name="status" value="{{ current_status }}">
+                    <input type="search" name="q" class="form-control form-control-sm" placeholder="Sunucu adı veya IP ara..." value="{{ current_q }}" aria-label="Ara">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary" aria-label="Ara"><i class="bi bi-search"></i></button>
+                </form>
+                <div class="filter-pills">
+                    <a href="{% url 'web:dashboard' %}?{% if current_q %}q={{ current_q|urlencode }}&{% endif %}status=all" class="btn-pill {% if current_status == 'all' %}active-all{% endif %}">Tümü</a>
+                    <a href="{% url 'web:dashboard' %}?{% if current_q %}q={{ current_q|urlencode }}&{% endif %}status=zombie" class="btn-pill {% if current_status == 'zombie' %}active-zombie{% endif %}">🚨 Zombi ve Kritik</a>
+                    <a href="{% url 'web:dashboard' %}?{% if current_q %}q={{ current_q|urlencode }}&{% endif %}status=active" class="btn-pill {% if current_status == 'active' %}active-aktif{% endif %}">✅ Aktif</a>
+                    <a href="{% url 'web:dashboard' %}?{% if current_q %}q={{ current_q|urlencode }}&{% endif %}status=powered_off" class="btn-pill {% if current_status == 'powered_off' %}active-off{% endif %}">🔌 Kapalı</a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-dark table-noc">
+                    <thead>
+                        <tr>
+                            <th class="sortable {% if current_sort == 'name' %}active{% endif %}"><a href="{% url 'web:dashboard' %}?{% if base_query_suffix %}{{ base_query_suffix }}&{% endif %}sort=name&dir={% if current_sort == 'name' and current_sort_dir == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-muted d-flex align-items-center gap-1">Ad{% if current_sort == 'name' %}<span class="sort-arrow">{% if current_sort_dir == 'desc' %}▼{% else %}▲{% endif %}</span>{% endif %}</a></th>
+                            <th class="sortable {% if current_sort == 'source' %}active{% endif %}"><a href="{% url 'web:dashboard' %}?{% if base_query_suffix %}{{ base_query_suffix }}&{% endif %}sort=source&dir={% if current_sort == 'source' and current_sort_dir == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-muted d-flex align-items-center gap-1">Kaynak{% if current_sort == 'source' %}<span class="sort-arrow">{% if current_sort_dir == 'desc' %}▼{% else %}▲{% endif %}</span>{% endif %}</a></th>
+                            <th>İşletim Sistemi</th>
+                            <th class="sortable {% if current_sort == 'power_state' %}active{% endif %}"><a href="{% url 'web:dashboard' %}?{% if base_query_suffix %}{{ base_query_suffix }}&{% endif %}sort=power_state&dir={% if current_sort == 'power_state' and current_sort_dir == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-muted d-flex align-items-center gap-1">Güç{% if current_sort == 'power_state' %}<span class="sort-arrow">{% if current_sort_dir == 'desc' %}▼{% else %}▲{% endif %}</span>{% endif %}</a></th>
+                            <th>Kaynaklar</th>
+                            <th>Kullanım</th>
+                            <th class="sortable {% if current_sort == 'idle_score' %}active{% endif %}"><a href="{% url 'web:dashboard' %}?{% if base_query_suffix %}{{ base_query_suffix }}&{% endif %}sort=idle_score&dir={% if current_sort == 'idle_score' and current_sort_dir == 'desc' %}asc{% else %}desc{% endif %}" class="text-decoration-none text-muted d-flex align-items-center gap-1">Puan{% if current_sort == 'idle_score' %}<span class="sort-arrow">{% if current_sort_dir == 'desc' %}▼{% else %}▲{% endif %}</span>{% endif %}</a></th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vm in page_obj %}
+                        <tr>
+                            <td>
+                                <span class="vm-name">{{ vm.name }}</span>
+                                <br><span class="vm-host">{{ vm.data_source.name|default:"—" }}</span>
+                            </td>
+                            <td><span class="text-muted">{{ vm.data_source.name|default:"—" }}</span></td>
+                            <td>
+                                {% with os_name=vm.metadata|get_item:"guestFullName"|default:vm.metadata|get_item:"guest_full_name"|default:"" %}
+                                {% if os_name and "indows" in os_name or os_name and "Windows" in os_name %}<i class="fa-brands fa-windows text-primary me-1"></i>{% elif os_name and "inux" in os_name or os_name and "Ubuntu" in os_name %}<i class="fa-brands fa-linux text-warning me-1"></i>{% else %}<i class="bi bi-hdd me-1 text-muted"></i>{% endif %}
+                                {{ os_name|default:"—" }}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with ps=vm.power_state|default:""|lower %}
+                                {% if ps == 'poweredon' or ps == 'powered on' %}
+                                    <span class="dot-on"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i></span> Açık
+                                {% elif ps == 'poweredoff' or ps == 'powered off' %}
+                                    <span class="dot-off"><i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i></span> Kapalı
+                                {% else %}<span class="text-muted">—</span>{% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {{ vm.metadata|get_item:"numCpu"|default:"—" }} vCPU | {% with mem_mb=vm.metadata|get_item:"memorySizeMB" %}{% if mem_mb %}{% widthratio mem_mb 1024 1 %} GB{% else %}—{% endif %}{% endwith %}
+                            </td>
+                            <td style="min-width: 120px;">
+                                <div class="small">
+                                    <span class="text-muted">CPU</span>
+                                    <div class="progress progress-noc mb-1">
+                                        <div class="progress-bar bg-primary" style="width: {{ vm.cpu_usage_percent|default:0|floatformat:0 }}%"></div>
+                                    </div>
+                                    <span class="text-muted">MEM</span>
+                                    <div class="progress progress-noc">
+                                        {% with mem_mb=vm.metadata|get_item:"memorySizeMB" %}
+                                        {% if mem_mb %}
+                                        <div class="progress-bar bg-info" style="width: {% widthratio vm.memory_usage_mb|default:0 mem_mb 100 %}%"></div>
+                                        {% else %}<div class="progress-bar bg-secondary" style="width: 0%"></div>{% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if vm.idle_score is None %}
+                                    <span class="badge badge-bekliyor">Analiz Bekleniyor</span>
+                                {% elif vm.idle_score > 0.7 %}
+                                    <span class="badge badge-atil">{% widthratio vm.idle_score 1 100 %}% Atıl</span>
+                                {% elif vm.idle_score < 0.5 %}
+                                    <span class="badge badge-aktif">Aktif</span>
+                                {% else %}
+                                    <span class="badge badge-bekliyor">{% widthratio vm.idle_score 1 100 %}%</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin:scans_virtualmachine_change' vm.pk %}" class="btn btn-sm btn-outline-secondary" target="_blank"><i class="bi bi-eye me-1"></i>Detay</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="8" class="text-center text-muted py-5">Sonuç bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination (preserve q and status) -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="px-2 py-1 border-top border-secondary d-flex justify-content-between align-items-center flex-wrap gap-1">
+                <span class="text-muted small">Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} (toplam {{ page_obj.paginator.count }} kayıt)</span>
+                <nav aria-label="Sayfa navigasyonu">
+                    <ul class="pagination pagination-sm mb-0 pagination-noc">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query_string_suffix %}&{{ query_string_suffix }}{% endif %}">Önceki</a></li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Önceki</span></li>
+                        {% endif %}
+                        {% for p in page_obj.paginator.page_range %}
+                            {% if p == page_obj.number %}
+                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                            {% elif p > page_obj.number|add:"-3" and p < page_obj.number|add:"3" %}
+                        <li class="page-item"><a class="page-link" href="?page={{ p }}{% if query_string_suffix %}&{{ query_string_suffix }}{% endif %}">{{ p }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query_string_suffix %}&{{ query_string_suffix }}{% endif %}">Sonraki</a></li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Sonraki</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    {{ chart_efficiency|json_script:"chart-efficiency" }}
+    {{ chart_clusters|json_script:"chart-clusters" }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        (function() {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            var toggle = document.getElementById('sidebarToggle');
+            if (sidebar && overlay && toggle) {
+                toggle.addEventListener('click', function() { sidebar.classList.add('show'); overlay.classList.add('show'); });
+                overlay.addEventListener('click', function() { sidebar.classList.remove('show'); overlay.classList.remove('show'); });
+            }
+            var effEl = document.getElementById('chart-efficiency');
+            var cluEl = document.getElementById('chart-clusters');
+            var eff = effEl ? JSON.parse(effEl.textContent) : { active: 0, idle: 0 };
+            var clu = cluEl ? JSON.parse(cluEl.textContent) : [];
+            if (document.getElementById('chartDonut')) {
+                new Chart(document.getElementById('chartDonut'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aktif', 'Atıl'],
+                        datasets: [{ data: [eff.active, eff.idle], backgroundColor: ['#3fb950', '#f85149'], borderWidth: 0 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { color: '#8b949e' } } }
+                    }
+                });
+            }
+            if (document.getElementById('chartBar')) {
+                new Chart(document.getElementById('chartBar'), {
+                    type: 'bar',
+                    data: {
+                        labels: clu.map(function(c) { return c.label; }),
+                        datasets: [{ label: 'Atıl Sunucu', data: clu.map(function(c) { return c.count; }), backgroundColor: 'rgba(248,81,73,0.7)', borderColor: '#f85149', borderWidth: 1 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
+                            y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

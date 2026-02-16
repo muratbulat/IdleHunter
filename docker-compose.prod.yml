@@ -1,0 +1,19 @@
+# IdleHunter - Production override
+# Use: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  db:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped
+
+  web:
+    restart: unless-stopped
+    # Override ALLOWED_HOSTS / CSRF_TRUSTED_ORIGINS via .env on the host
+
+  celery_worker:
+    restart: unless-stopped
+
+  celery_beat:
+    restart: unless-stopped

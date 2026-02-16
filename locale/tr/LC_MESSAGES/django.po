@@ -1,0 +1,116 @@
+# IdleHunter - Turkish (default locale)
+# Copyright (C) 2025 IdleHunter
+# This file is distributed under the same license as the IdleHunter package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: IdleHunter\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language: tr\n"
+"Language-Team: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "IdleHunter"
+msgstr "IdleHunter"
+
+msgid "Idle VM detection — base setup is running."
+msgstr "Boşta çalışan VM tespiti — temel kurulum çalışıyor."
+
+msgid "View site"
+msgstr "Siteyi göster"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Turkish"
+msgstr "Türkçe"
+
+msgid "English"
+msgstr "İngilizce"
+
+msgid "Log in"
+msgstr "Oturum aç"
+
+msgid "Log out"
+msgstr "Oturumu kapat"
+
+msgid "Username"
+msgstr "Kullanıcı adı"
+
+msgid "Password"
+msgstr "Parola"
+
+msgid "Invalid username or password. Please try again."
+msgstr "Geçersiz kullanıcı adı veya parola. Lütfen tekrar deneyin."
+
+msgid "Back to home"
+msgstr "Ana sayfaya dön"
+
+msgid "Dashboard"
+msgstr "Kontrol paneli"
+
+msgid "Data sources"
+msgstr "Veri kaynakları"
+
+msgid "Virtual machines"
+msgstr "Sanal makineler"
+
+msgid "Scan runs"
+msgstr "Tarama çalıştırmaları"
+
+msgid "View and manage in Admin"
+msgstr "Yönetimde görüntüle ve yönet"
+
+msgid "Recent VMs"
+msgstr "Son VM'ler"
+
+msgid "Name"
+msgstr "Ad"
+
+msgid "Source"
+msgstr "Kaynak"
+
+msgid "Last seen"
+msgstr "Son görülme"
+
+msgid "Recent scan runs"
+msgstr "Son tarama çalıştırmaları"
+
+msgid "Started"
+msgstr "Başlangıç"
+
+msgid "Status"
+msgstr "Durum"
+
+msgid "Idle?"
+msgstr "Boşta mı?"
+
+msgid "Idle"
+msgstr "Boşta"
+
+msgid "Active"
+msgstr "Aktif"
+
+msgid "Mark as idle"
+msgstr "Boşta işaretle"
+
+msgid "Unmark idle"
+msgstr "Boşta işaretini kaldır"
+
+msgid "Click the button to toggle idle status for a VM."
+msgstr "Bir VM'nin boşta durumunu değiştirmek için düğmeye tıklayın."
+
+msgid "Log in to mark VMs as idle."
+msgstr "VM'leri boşta işaretlemek için oturum açın."
+
+msgid "Detected"
+msgstr "Tespit"
+
+msgid "Idle status is detected automatically from scan data (e.g. no activity for 7+ days)."
+msgstr "Boşta durum, tarama verilerinden otomatik tespit edilir (örn. 7+ gün etkinlik yoksa)."

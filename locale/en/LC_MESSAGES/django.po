@@ -1,0 +1,116 @@
+# IdleHunter - English
+# Copyright (C) 2025 IdleHunter
+# This file is distributed under the same license as the IdleHunter package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: IdleHunter\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language: en\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "IdleHunter"
+msgstr "IdleHunter"
+
+msgid "Idle VM detection — base setup is running."
+msgstr "Idle VM detection — base setup is running."
+
+msgid "View site"
+msgstr "View site"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Turkish"
+msgstr "Turkish"
+
+msgid "English"
+msgstr "English"
+
+msgid "Log in"
+msgstr "Log in"
+
+msgid "Log out"
+msgstr "Log out"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Invalid username or password. Please try again."
+msgstr "Invalid username or password. Please try again."
+
+msgid "Back to home"
+msgstr "Back to home"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Data sources"
+msgstr "Data sources"
+
+msgid "Virtual machines"
+msgstr "Virtual machines"
+
+msgid "Scan runs"
+msgstr "Scan runs"
+
+msgid "View and manage in Admin"
+msgstr "View and manage in Admin"
+
+msgid "Recent VMs"
+msgstr "Recent VMs"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Last seen"
+msgstr "Last seen"
+
+msgid "Recent scan runs"
+msgstr "Recent scan runs"
+
+msgid "Started"
+msgstr "Started"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Idle?"
+msgstr "Idle?"
+
+msgid "Idle"
+msgstr "Idle"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Mark as idle"
+msgstr "Mark as idle"
+
+msgid "Unmark idle"
+msgstr "Unmark idle"
+
+msgid "Click the button to toggle idle status for a VM."
+msgstr "Click the button to toggle idle status for a VM."
+
+msgid "Log in to mark VMs as idle."
+msgstr "Log in to mark VMs as idle."
+
+msgid "Detected"
+msgstr "Detected"
+
+msgid "Idle status is detected automatically from scan data (e.g. no activity for 7+ days)."
+msgstr "Idle status is detected automatically from scan data (e.g. no activity for 7+ days)."

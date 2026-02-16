@@ -1,0 +1,300 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'tr' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% trans "Log in" %} — IdleHunter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0e1a;
+            --bg-mid: #12162a;
+            --accent-cyan: #00f5d4;
+            --accent-green: #00ff88;
+            --glass-bg: rgba(18, 22, 42, 0.75);
+            --glass-border: rgba(0, 245, 212, 0.2);
+            --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.4);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; overflow-x: hidden; }
+
+        body {
+            font-family: 'Exo 2', system-ui, sans-serif;
+            background: var(--bg-deep);
+            color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            position: relative;
+        }
+
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0a0e1a 0%, #12162a 25%, #1a1a3e 50%, #0d1220 75%, #0a0e1a 100%);
+            background-size: 400% 400%;
+            animation: gradientBreathing 12s ease infinite;
+            z-index: 0;
+        }
+        @keyframes gradientBreathing {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Particle / network mesh background */
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: particleFloat 15s linear infinite;
+        }
+        .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 18s; }
+        .particle:nth-child(2) { left: 25%; top: 80%; animation-delay: -2s; animation-duration: 14s; }
+        .particle:nth-child(3) { left: 60%; top: 10%; animation-delay: -4s; animation-duration: 20s; }
+        .particle:nth-child(4) { left: 80%; top: 60%; animation-delay: -1s; animation-duration: 16s; }
+        .particle:nth-child(5) { left: 40%; top: 50%; animation-delay: -3s; animation-duration: 12s; }
+        .particle:nth-child(6) { left: 90%; top: 30%; animation-delay: -5s; animation-duration: 19s; }
+        .particle:nth-child(7) { left: 15%; top: 60%; animation-delay: -2.5s; animation-duration: 17s; }
+        .particle:nth-child(8) { left: 70%; top: 85%; animation-delay: -1.5s; animation-duration: 13s; }
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(30px, -40px) scale(1.2); opacity: 0.6; }
+            50% { transform: translate(-20px, 30px) scale(0.9); opacity: 0.4; }
+            75% { transform: translate(40px, 20px) scale(1.1); opacity: 0.5; }
+        }
+
+        /* Grid lines (network mesh feel) */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background-image:
+                linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Glassmorphism card */
+        .login-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), var(--glow-cyan);
+            padding: 2.5rem;
+            animation: cardFadeInUp 0.8s ease-out forwards;
+        }
+        @keyframes cardFadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo & branding */
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 245, 212, 0.2), rgba(0, 255, 136, 0.15));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--accent-cyan);
+            font-size: 2rem;
+        }
+        .login-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            text-align: center;
+            color: #fff;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.35rem;
+        }
+        .login-tagline {
+            font-size: 0.9rem;
+            color: rgba(228, 230, 235, 0.75);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Form */
+        .login-card .form-floating {
+            margin-bottom: 1.25rem;
+        }
+        .login-card .form-control {
+            background: rgba(10, 14, 26, 0.6);
+            border: 1px solid rgba(0, 245, 212, 0.25);
+            color: #fff;
+            border-radius: 12px;
+            padding: 1rem 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .login-card .form-control::placeholder {
+            color: transparent;
+        }
+        .login-card .form-control:focus {
+            background: rgba(10, 14, 26, 0.8);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.2);
+            outline: 0;
+        }
+        .login-card .form-floating > label {
+            color: rgba(228, 230, 235, 0.8);
+        }
+        .login-card .form-control:focus ~ label,
+        .login-card .form-control:not(:placeholder-shown) ~ label {
+            color: var(--accent-cyan);
+        }
+
+        /* Login button */
+        .btn-login {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00f5d4 0%, #00ff88 100%);
+            color: #0a0e1a;
+            margin-top: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-login:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 245, 212, 0.5);
+            color: #0a0e1a;
+        }
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        /* Error alert */
+        .alert-login {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            border-radius: 12px;
+            color: #f8a0a8;
+            margin-bottom: 1.25rem;
+            padding: 0.75rem 1rem;
+        }
+
+        /* Back link */
+        .login-back {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(0, 245, 212, 0.9);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .login-back:hover {
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient" aria-hidden="true"></div>
+    <div class="bg-particles" aria-hidden="true">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+    </div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <div class="login-card">
+        <div class="login-logo">
+            <i class="bi bi-radar"></i>
+        </div>
+        <h1 class="login-title">IdleHunter</h1>
+        <p class="login-tagline">Stop Zombie VMs. Reclaim Your Resources.</p>
+
+        {% if form.non_field_errors or form.errors %}
+            <div class="alert-login" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                {% if not form.non_field_errors %}
+                    {% trans "Invalid username or password. Please try again." %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="form-floating">
+                <input type="text"
+                       name="username"
+                       id="id_username"
+                       class="form-control"
+                       placeholder=" "
+                       value="{{ form.username.value|default:'' }}"
+                       required
+                       autofocus
+                       autocomplete="username">
+                <label for="id_username">{% trans "Username" %}</label>
+            </div>
+
+            <div class="form-floating">
+                <input type="password"
+                       name="password"
+                       id="id_password"
+                       class="form-control"
+                       placeholder=" "
+                       required
+                       autocomplete="current-password">
+                <label for="id_password">{% trans "Password" %}</label>
+            </div>
+
+            <button type="submit" class="btn btn-login">{% trans "Log in" %}</button>
+        </form>
+
+        <a href="/" class="login-back">{% trans "Back to home" %}</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
